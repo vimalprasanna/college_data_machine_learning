@@ -1,0 +1,28 @@
+import pandas as pd;
+import numpy as np;
+import matplotlib.pyplot as plt;
+import seaborn as sns;
+from sklearn.model_selection import train_test_split;
+from sklearn.metrics import confusion_matrix,classification_report;
+data=pd.read_csv('College_Data',index_col=0);
+sns.lmplot('Room.Board','Grad.Rate',data=data,hue='Private');
+plt.show();
+sns.lmplot('F.Undergrad','Outstate',data=data,hue='Private');
+plt.show();
+g=sns.FacetGrid(data,hue='Private');
+g=g.map(plt.hist,'Outstate',alpha=0.7);
+plt.show();
+g=sns.FacetGrid(data,hue='Private');
+g=g.map(plt.hist,'Grad.Rate',alpha=0.7);
+plt.show();
+print(data[data['Grad.Rate']>100]);
+data['Grad.Rate']['Cazenovia College']=100;
+from sklearn.cluster import KMeans;
+km=KMeans(n_clusters=2);
+km.fit(data.drop('Private',axis=1));
+clusters=pd.get_dummies(data['Private'],drop_first=True);
+data=data.drop('Private',axis=1);
+data=pd.concat([data,clusters],axis=1);
+print(classification_report(km.labels_,data['Yes']));
+print(confusion_matrix(km.labels_,data['Yes']));
+
